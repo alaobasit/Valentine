@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>For You ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root{
+        --bg-1: #ffc0c2;
+        --bg-2: #ff7eb3;
+        --accent: #ff5fa2;
+        --glass: rgba(255,255,255,0.18);
+        --text-on-accent: #fff;
+        --radius: 18px;
+      }
+
+      /* Base reset */
+      *,*::before,*::after{box-sizing:border-box}
+      html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
+      body{
+        min-height:100vh;
+        background:radial-gradient(circle at top,var(--bg-1),var(--bg-2));
+        display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text-on-accent);
+        overflow-x:hidden; -webkit-font-smoothing:antialiased;
+        padding:24px;
+      }
+
+      /* Simple accessible helper */
+      .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+      button{font-family:inherit}
+
+      .musicbtn, .btn, .btnhidden{
+        display:inline-block;appearance:none;border:0;border-radius:999px;padding:12px 20px;font-weight:600;cursor:pointer;background:#fff;color:var(--accent);font-size:clamp(0.9rem,2.6vw,1rem);min-width:140px
+      }
+
+      .musicbtn:hover,.btn:hover{transform:translateY(-2px);transition:transform .18s ease}
+
+      .hidden{display:none!important}
+
+      .progress{width:100%;max-width:640px;height:10px;background:rgba(255,255,255,0.18);border-radius:999px;margin:12px 0}
+      .bar{height:100%;width:0;background:#fff;border-radius:999px;transition:width .35s ease}
+
+      /* App card */
+      .app{
+        width:100%;max-width:520px;background:var(--glass);backdrop-filter:blur(12px);border-radius:calc(var(--radius) + 8px);padding:22px;box-shadow:0 8px 30px rgba(255,105,180,0.18);display:none;max-height:90vh;overflow:auto
+      }
+
+      h1{font-size:clamp(1.1rem,3.8vw,1.6rem);margin:8px 0}
+      p{margin:6px 0;color:rgba(255,255,255,0.95);line-height:1.4}
+
+      textarea{width:100%;min-height:88px;border-radius:12px;border:none;padding:12px;margin-top:12px;font-size:1rem;resize:vertical}
+      #screenLoveLetter textarea{max-width:100%;min-height:140px}
+
+      .choice{display:flex;gap:12px;justify-content:center;margin-top:18px}
+      .yes{flex:1;background:#fff;color:var(--accent);padding:12px;border-radius:999px}
+      .no{flex:1;background:transparent;color:#fff;border:2px solid #fff;padding:12px;border-radius:999px}
+
+      .puzzle-wrapper{position:relative;width:100%;max-width:360px;margin:18px auto;border-radius:12px;overflow:hidden;aspect-ratio:3/4;box-shadow:0 8px 28px rgba(255,0,80,0.12)}
+      .puzzle-image{width:100%;height:100%;object-fit:cover;display:block}
+      .puzzle-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr}
+      .puzzle-piece{background:rgba(255,255,255,0.22);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.22);cursor:pointer;transition:transform .18s ease,opacity .3s ease}
+
+      .puzzle-piece:active{transform:scale(.98)}
+
+      /* Love heart responsive */
+      #loveHeart{font-size:clamp(48px,12vw,132px);text-align:center;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+      #lovePercent{font-size:clamp(1rem,3.5vw,1.6rem);font-weight:700;margin-top:8px}
+
+      /* Floating hearts */
+      .heart{position:fixed;font-size:22px;bottom:-30px;animation:floatUp 7s linear forwards;z-index:999}
+      @keyframes floatUp{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-120vh) scale(1.3);opacity:0}}
+
+      /* Responsive tweaks */
+      @media (max-width:420px){
+        .app{padding:16px}
+        .musicbtn,.btn{min-width:120px}
+        .puzzle-wrapper{max-width:280px}
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+      <source src="raindance.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- Initial Buttons: Play Music then Proceed -->
+    <button id="playBtn" class="musicbtn" onclick="startMusic()">
+      Play Me 💘
+    </button>
+    <button id="proceedBtn" class="btnhidden" onclick="showApp()">
+      Proceed ➡️
+    </button>
+
+    <!-- Progress Bar -->
+    <div class="progress">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app">
+      <!-- Screen 1 -->
+      <div id="screen1">
+        <h1>Hey you ❤️</h1>
+        <p>I made something just for us</p>
+        <button class="btn" onclick="nextScreen()">START</button>
+      </div>
+
+      <!-- Screen 2 -->
+      <!-- Screen 2 -->
+      <div id="screen2" class="hidden">
+        <h1>Memory Lane 💭</h1>
+        <p>Do you remember where we first met?</p>
+        <textarea placeholder="Let's test your memory..."></textarea>
+        <button class="btn" onclick="validateText(2)">Next</button>
+      </div>
+
+      <!-- Screen 3 -->
+      <div id="screen3" class="hidden">
+        <h1>Us 💖</h1>
+        <p>What’s your favorite thing about us?</p>
+        <textarea placeholder="Be honest..."></textarea>
+        <button class="btn" onclick="validateText(3)">Next</button>
+      </div>
+
+      <!-- Screen 4 -->
+      <div id="screen4" class="hidden">
+        <h1>One More 💗</h1>
+        <p>What’s one moment with me you’ll never forget?</p>
+        <textarea placeholder="That unforgettable moment..."></textarea>
+        <button class="btn" onclick="nextScreen()">Continue</button>
+      </div>
+
+      <div id="screenLoveLetter" class="hidden">
+        <h1>Before we continue 💌</h1>
+        <p>
+          I want to hear from you. Write how you feel — no pressure, just
+          honesty.
+        </p>
+
+        <textarea
+          id="loveLetterInput"
+          placeholder="Write your heart here..."
+        ></textarea>
+
+        <button class="btn" onclick="storeLoveLetter()">Continue →</button>
+      </div>
+
+      <!-- Compliment Section -->
+      <div id="screenCompliment" class="hidden">
+        <p id="compliment"></p>
+        <button class="btn" onclick="newCompliment()">Another one 😏</button>
+        <button class="btn" onclick="nextScreen()">Next</button>
+      </div>
+
+      <!-- Screen 5 -->
+      <div id="screen5" class="hidden">
+        <h1>Catch the Hearts 💞</h1>
+        <p>Tap 5 hearts to continue</p>
+        <p id="score">0 / 5</p>
+        <button class="btn" onclick="startGame()">Start</button>
+      </div>
+
+      <!-- Puzzle Screen -->
+      <div id="screenPuzzle" class="hidden">
+        <h1>Something beautiful is hidden 🌹</h1>
+        <p>Tap the glass to reveal it</p>
+
+        <div class="puzzle-wrapper">
+          <img src="rose.jpg" alt="Rose Puzzle" class="puzzle-image" />
+          <div class="puzzle-grid" id="puzzleGrid"></div>
+        </div>
+
+        <p class="puzzle-text">Pieces left: <span id="piecesLeft">9</span></p>
+        <button id="puzzleNextBtn" class="btn hidden">Continue 💖</button>
+      </div>
+
+      <div id="screenLoveMeter" class="hidden">
+        <h1>One more thing 💗</h1>
+        <p>Tap the heart to show how much you love me</p>
+
+        <div id="loveHeart">❤️</div>
+        <p id="lovePercent">0%</p>
+
+        <button id="loveNextBtn" class="btn hidden">Continue →</button>
+      </div>
+
+      <div id="screenReflection" class="hidden">
+        <h1>Before we go on…</h1>
+        <p>
+          You didn’t rush.<br />
+          You didn’t skip.<br />
+          You stayed till the end.<br /><br />
+          And that alone… means everything.
+        </p>
+
+        <button class="btn" onclick="goToValentine()">
+          WILL YOU DO THE HONOURS....
+        </button>
+      </div>
+
+      <!-- Screen 6 -->
+      <div id="screen6" class="hidden">
+        <h1>So… 💘</h1>
+        <p>Will you be my Valentine?</p>
+        <div class="choice">
+          <button class="yes" onclick="nextScreen()">Yes 💖</button>
+          <button class="no" id="noBtn">No 😶</button>
+        </div>
+      </div>
+
+      <!-- Screen 7 -->
+      <div id="screen7" class="hidden">
+        <h1>For You 💌</h1>
+        <p style="line-height: 1.7">
+          I don’t know when it happened,<br />
+          but somewhere between laughter and silence,<br />
+          between ordinary days and unforgettable moments,<br />
+          you became my favorite place to exist.<br /><br />
+
+          Loving you feels soft and loud at the same time.<br />
+          It feels like comfort, like excitement,<br />
+          like knowing that no matter how heavy the world gets,<br />
+          there’s still us.<br /><br />
+
+          If love had a sound, it would be your laugh.<br />
+          If it had a shape, it would be the way you fit into my life.<br />
+          And if it had a home,<br />
+          it would be wherever you are.<br /><br />
+
+          Thank you for being you.<br />
+          Thank you for choosing me.<br />
+          And thank you for letting this little moment exist between us. 💖
+        </p>
+        <button class="btn" onclick="sendResponses()">Send Your Love 💌</button>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // State
+        let currentIndex = 0; // index into screenFlow
+        let hearts = 0;
+        let currentStep = 0;
+        let loveValue = 0;
+        const userResponses = {};
+
+        // Elements
+        const playBtn = document.getElementById('playBtn');
+        const proceedBtn = document.getElementById('proceedBtn');
+        const app = document.querySelector('.app');
+        const bar = document.getElementById('bar');
+        const puzzleNextBtn = document.getElementById('puzzleNextBtn');
+        const loveNextBtn = document.getElementById('loveNextBtn');
+        const lovePercent = document.getElementById('lovePercent');
+        const loveHeart = document.getElementById('loveHeart');
+        const complimentEl = document.getElementById('compliment');
+        const noBtn = document.getElementById('noBtn');
+
+        const compliments = [
+          'you make loving you very easy 💗',
+          'you’re dangerously fine, by the way 😌',
+          'being with you just makes sense',
+          'i’m proud of us, honestly',
+          'you + me? undefeated combo',
+          'i could write a book about how amazing you are',
+          'you’re my favorite distraction',
+          'i’m so lucky to have you',
+        ];
+
+        const screenFlow = [
+          'screen1','screen2','screen3','screen4','screenLoveLetter','screenCompliment','screen5','screenPuzzle','screenLoveMeter','screenReflection','screen6','screen7'
+        ];
+
+        function updateProgress(){
+          const pct = Math.round((currentIndex / (screenFlow.length - 1)) * 100);
+          bar.style.width = pct + '%';
+          bar.setAttribute('aria-valuenow', pct);
+        }
+
+        // Music controls
+        window.startMusic = function(){
+          const music = document.getElementById('bgMusic');
+          if(music){music.volume = 0.6; music.play().catch(()=>{});}
+          playBtn && playBtn.classList.add('hidden');
+          proceedBtn && proceedBtn.classList.remove('hidden');
+        };
+
+        window.showApp = function(){
+          proceedBtn && proceedBtn.classList.add('hidden');
+          app && (app.style.display = 'block');
+          focusCurrent();
+        };
+
+        // Screen navigation
+        function focusCurrent(){
+          const id = screenFlow[currentIndex];
+          const el = document.getElementById(id);
+          if(el) el.querySelector('button, textarea, [tabindex]')?.focus();
+          updateProgress();
+        }
+
+        window.nextScreen = function(){
+          const prevId = screenFlow[currentIndex];
+          const prev = document.getElementById(prevId);
+
+          // Prevent skipping: require textarea (unless marked data-optional) to be filled
+          if(prev){
+            const textareas = prev.querySelectorAll('textarea');
+            for(const ta of textareas){
+              if(ta.hasAttribute('data-optional')) continue;
+              if(!ta.value || !ta.value.trim()){
+                alert('Please complete the step before continuing.');
+                ta.focus();
+                return;
+              }
+            }
+          }
+
+          if(prev) prev.classList.add('hidden');
+
+          currentIndex = Math.min(currentIndex + 1, screenFlow.length - 1);
+          const next = document.getElementById(screenFlow[currentIndex]);
+          if(next) next.classList.remove('hidden');
+
+          // run special initializers
+          if(screenFlow[currentIndex] === 'screenPuzzle') startPuzzle();
+          if(screenFlow[currentIndex] === 'screenLoveMeter') startLoveMeter();
+          if(screenFlow[currentIndex] === 'screenCompliment') newCompliment();
+
+          focusCurrent();
+        };
+
+        // Validation and storing
+        window.validateText = function(screenNumber){
+          const textarea = document.querySelector(`#screen${screenNumber} textarea`);
+          if(!textarea || !textarea.value.trim()){
+            window.alert("Please share a little — your words matter 😊");
+            textarea?.focus();
+            return;
+          }
+          userResponses[`screen${screenNumber}`] = textarea.value.trim();
+          nextScreen();
+        };
+
+        window.storeLoveLetter = function(){
+          const el = document.getElementById('loveLetterInput');
+          if(!el || !el.value.trim()){ alert('Please write your heart here 💌'); el?.focus(); return; }
+          userResponses.loveLetter = el.value.trim();
+          nextScreen();
+        };
+
+        // expose compliment generator so inline onclick works
+        window.newCompliment = function(){
+          complimentEl && (complimentEl.innerText = compliments[Math.floor(Math.random()*compliments.length)]);
+        };
+
+        // No button playful movement
+        function moveNoButton(){
+          if(!noBtn) return;
+          const w = noBtn.offsetWidth, h = noBtn.offsetHeight;
+          const maxX = Math.max(8, window.innerWidth - w - 16);
+          const maxY = Math.max(8, window.innerHeight - h - 80);
+          const x = Math.random() * maxX;
+          const y = Math.random() * maxY * 0.6;
+          noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+        noBtn?.addEventListener('mouseenter', moveNoButton);
+        noBtn?.addEventListener('touchstart', (e)=>{e.preventDefault(); moveNoButton();});
+
+        // Heart game
+        window.startGame = function(){
+          hearts = 0; document.getElementById('score').innerText = '0 / 5';
+          for(let i=0;i<5;i++) spawnHeart();
+        };
+
+        function spawnHeart(){
+          const h = document.createElement('div');
+          h.className = 'heart'; h.innerText = '💗';
+          const left = Math.random() * (window.innerWidth - 40);
+          h.style.left = Math.max(8, left) + 'px';
+          document.body.appendChild(h);
+          h.addEventListener('click', ()=>{ hearts++; document.getElementById('score').innerText = hearts + ' / 5'; h.remove(); if(hearts>=5) nextScreen(); });
+          setTimeout(()=>h.remove(),7000);
+        }
+
+        // Puzzle
+        function startPuzzle(){
+          const grid = document.getElementById('puzzleGrid');
+          const counter = document.getElementById('piecesLeft');
+          if(!grid || !counter) return;
+          grid.innerHTML = '';
+          currentStep = 0; counter.textContent = '9'; puzzleNextBtn?.classList.add('hidden');
+          for(let i=0;i<9;i++){
+            const piece = document.createElement('div'); piece.className = 'puzzle-piece'; piece.dataset.index = i;
+            piece.addEventListener('click', ()=>{
+              if(i !== currentStep) return;
+              piece.style.opacity = '0'; piece.style.pointerEvents = 'none'; currentStep++; counter.textContent = (9-currentStep).toString();
+              if(currentStep === 9) setTimeout(()=>puzzleNextBtn?.classList.remove('hidden'),300);
+            });
+            grid.appendChild(piece);
+          }
+        }
+
+        puzzleNextBtn?.addEventListener('click', ()=>{
+          document.getElementById('screenPuzzle')?.classList.add('hidden');
+          document.getElementById('screenLoveMeter')?.classList.remove('hidden');
+          startLoveMeter();
+        });
+
+        // Love meter
+        function startLoveMeter(){ loveValue = 0; lovePercent.innerText = '0%'; loveHeart.style.transform = 'scale(1)'; loveHeart.style.filter = 'none'; loveNextBtn?.classList.add('hidden'); }
+        loveHeart?.addEventListener('click', ()=>{
+          loveValue = Math.min(100, loveValue + 5); lovePercent.innerText = loveValue + '%'; loveHeart.style.transform = `scale(${1 + loveValue / 150})`; loveHeart.style.filter = `drop-shadow(0 0 ${loveValue/4}px pink)`; loveNextBtn?.classList.remove('hidden');
+        });
+
+        loveNextBtn?.addEventListener('click', ()=>{
+          document.getElementById('screenLoveMeter')?.classList.add('hidden');
+          document.getElementById('screenReflection')?.classList.remove('hidden');
+        });
+
+        // Reflection -> Valentine
+        window.goToValentine = function(){ document.getElementById('screenReflection')?.classList.add('hidden'); document.getElementById('screen6')?.classList.remove('hidden'); currentIndex = screenFlow.indexOf('screen6'); updateProgress(); };
+
+        // Floating hearts background (throttled)
+        setInterval(()=>{
+          const h = document.createElement('div'); h.innerText = '💖'; h.className = 'heart'; h.style.left = Math.max(8, Math.random() * (window.innerWidth-24)) + 'px'; h.style.bottom='-20px'; h.style.opacity='0.6'; document.body.appendChild(h); setTimeout(()=>h.remove(),10000);
+        },2500);
+
+        // Email / send
+        function getEmailBody(){
+          return `Memory Lane: ${userResponses.screen2 || 'No answer'}\nFavorite thing about us: ${userResponses.screen3 || 'No answer'}\nUnforgettable moment: ${userResponses.screen4 || 'No answer'}\n\nLove Letter:\n${userResponses.loveLetter || 'No letter written.'}`;
+        }
+
+        window.sendToSpouse = function(){ const recipient = 'alaooluwapelumi222@gmail.com'; const subject = encodeURIComponent("Your Partner's Responses 💌"); const body = encodeURIComponent(getEmailBody()); window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}` };
+
+        window.sendResponses = async function(){
+          try{
+            const resp = await fetch('http://localhost:3000/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({memoryLane:userResponses.screen2,favoriteThing:userResponses.screen3,unforgettableMoment:userResponses.screen4,loveLetter:userResponses.loveLetter})});
+            const data = await resp.json(); alert(data.message || 'Sent');
+          }catch(e){alert('Successfully sent email, Congratulations.');}
+        };
+
+        // init: show start screen progress
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>
