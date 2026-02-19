@@ -248,25 +248,28 @@
 
     <!-- JavaScript -->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // State
-        let currentIndex = 0; // index into screenFlow
-        let hearts = 0;
-        let currentStep = 0;
-        let loveValue = 0;
-        const userResponses = {};
+      // State (declared at module level so onclick handlers can access)
+      let currentIndex = 0;
+      let hearts = 0;
+      let currentStep = 0;
+      let loveValue = 0;
+      const userResponses = {};
 
-        // Elements
-        const playBtn = document.getElementById('playBtn');
-        const proceedBtn = document.getElementById('proceedBtn');
-        const app = document.querySelector('.app');
-        const bar = document.getElementById('bar');
-        const puzzleNextBtn = document.getElementById('puzzleNextBtn');
-        const loveNextBtn = document.getElementById('loveNextBtn');
-        const lovePercent = document.getElementById('lovePercent');
-        const loveHeart = document.getElementById('loveHeart');
-        const complimentEl = document.getElementById('compliment');
-        const noBtn = document.getElementById('noBtn');
+      // Elements (declared at module level so onclick handlers can access)
+      let playBtn, proceedBtn, app, bar, puzzleNextBtn, loveNextBtn, lovePercent, loveHeart, complimentEl, noBtn;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initialize element references
+        playBtn = document.getElementById('playBtn');
+        proceedBtn = document.getElementById('proceedBtn');
+        app = document.querySelector('.app');
+        bar = document.getElementById('bar');
+        puzzleNextBtn = document.getElementById('puzzleNextBtn');
+        loveNextBtn = document.getElementById('loveNextBtn');
+        lovePercent = document.getElementById('lovePercent');
+        loveHeart = document.getElementById('loveHeart');
+        complimentEl = document.getElementById('compliment');
+        noBtn = document.getElementById('noBtn');
 
         const compliments = [
           'you make loving you very easy 💗',
