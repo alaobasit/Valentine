@@ -436,11 +436,6 @@
         // Reflection -> Valentine
         window.goToValentine = function(){ document.getElementById('screenReflection')?.classList.add('hidden'); document.getElementById('screen6')?.classList.remove('hidden'); currentIndex = screenFlow.indexOf('screen6'); updateProgress(); };
 
-        // Floating hearts background (throttled)
-        setInterval(()=>{
-          const h = document.createElement('div'); h.innerText = '💖'; h.className = 'heart'; h.style.left = Math.max(8, Math.random() * (window.innerWidth-24)) + 'px'; h.style.bottom='-20px'; h.style.opacity='0.6'; document.body.appendChild(h); setTimeout(()=>h.remove(),10000);
-        },2500);
-
         // Email / send
         function getEmailBody(){
           return `Memory Lane: ${userResponses.screen2 || 'No answer'}\nFavorite thing about us: ${userResponses.screen3 || 'No answer'}\nUnforgettable moment: ${userResponses.screen4 || 'No answer'}\n\nLove Letter:\n${userResponses.loveLetter || 'No letter written.'}`;
@@ -458,6 +453,11 @@
         // init: show start screen progress
         updateProgress();
       });
+
+      // Floating hearts background (throttled)
+      setInterval(()=>{
+        const h = document.createElement('div'); h.innerText = '💖'; h.className = 'heart'; h.style.left = Math.max(8, Math.random() * (window.innerWidth-24)) + 'px'; h.style.bottom='-20px'; h.style.opacity='0.6'; document.body.appendChild(h); setTimeout(()=>h.remove(),10000);
+      },2500);
     </script>
   </body>
 </html>
