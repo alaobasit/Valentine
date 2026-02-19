@@ -11,6 +11,11 @@ app.use(express.json({ limit: '200kb' }));
 // Serve static files (the front-end) so the app can be previewed from the same server
 app.use(express.static(path.join(__dirname)));
 
+// Route root path to valentine.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'valentine.html'));
+});
+
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.post('/send-email', async (req, res) => {
